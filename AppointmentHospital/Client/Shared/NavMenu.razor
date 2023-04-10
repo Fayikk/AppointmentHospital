@@ -1,0 +1,47 @@
+﻿@inject IPoliclinicService _policlinicService
+@implements IDisposable
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">AppointmentHospital</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        @foreach(var item in _policlinicService.Policlinics)
+        {
+             <div class="nav-item px-3">
+            <NavLink class="nav-link" href="@item.Id">
+                @item.PoliclinicName
+            </NavLink>
+        </div>
+        }
+       
+       
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await _policlinicService.GetPoliclinics();
+        _policlinicService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        _policlinicService.OnChange -= StateHasChanged;
+    }
+}

@@ -1,0 +1,73 @@
+﻿@page "/meetDate/{doctorId:int}"
+@using AppointmentHospital.Client.Services.ForMeet;
+@inject IMeetService _meetService
+@inject NavigationManager _navigationManager
+
+<EditForm Model="meet" OnValidSubmit="CreateMeets">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="mb-3" style="display:none">
+        <label for="doctorId">Randevu alınacak Doktor</label>
+        <InputNumber @bind-Value="meet.DoctorId" class="form-control"></InputNumber>
+        <ValidationSummary For="@(() => meet.DoctorId)"></ValidationSummary>
+    </div>
+
+    <div class="mb-3">
+        <label for="dateInput">Tarih bilgisini giriniz</label>
+        <div class="mb-3 text-danger" style="font-style:italic">
+            <strong>(Randevular yalnızca 1 aylık süreler içerisinde alınabilmektedir)</strong>
+        </div>
+        @{
+            DateTime minDate = DateTime.Today;
+            DateTime maxDate = minDate.AddMonths(1);
+        }
+        <input type="date" id="dateInput" @bind="@meet.MeetDate" class="form-control"
+               min="@minDate.ToString("yyyy-MM-dd")" max="@maxDate.ToString("yyyy-MM-dd")" />
+        <ValidationMessage For="@(()=>meet.MeetDate)"></ValidationMessage>
+
+    </div>
+    <div class="mb-3">
+        <label for="timeInput">Saat bilgisini seçiniz</label>
+        <select id="timeInput" @bind="@meet.MeetTime" class="form-control">
+            @for (int i = 8; i < 17; i++)
+            {
+                for (int j = 0; j < 60; j += 30)
+                {
+                    TimeSpan time = new TimeSpan(i, j, 0);
+                    <option style="color:green" value="@time">@time.ToString("hh\\:mm")</option>
+                }
+            }
+        </select>
+        <ValidationMessage For="(()=>meet.MeetTime)"></ValidationMessage>
+        <div class="mb-3 text-danger">@errorMessage</div>
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Randevuyu Al</button>
+
+    </div>
+
+</EditForm>
+
+
+
+
+@code {
+    [Parameter]
+    public int doctorId { get; set; }
+    public Meet meet = new Meet();
+    string errorMessage = "";
+    bool errorBool = false;
+    private async Task CreateMeets()
+    {
+        meet.DoctorId = doctorId;
+        var result = await _meetService.CreateMeet(meet);
+        if (!result.Success)
+        {
+            errorMessage = result.Message;
+            errorBool = result.Success;
+        }
+        else
+        {
+            _navigationManager.NavigateTo("");
+        }
+    }
+}

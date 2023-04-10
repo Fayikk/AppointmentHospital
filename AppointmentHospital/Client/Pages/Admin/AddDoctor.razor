@@ -1,0 +1,53 @@
+﻿@page "/addDoctor"
+
+@inject IDoctorService _doctorService
+@inject IPoliclinicService _policlinicService
+@inject NavigationManager _navigationManager
+
+<EditForm Model="doctor" OnValidSubmit="CreateDoctors">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="btn btn-group col-6">
+        <InputSelect @bind-Value="doctor.PoliclinicId" class="form-select">
+            <option value="0" disabled="disabled" selected>
+                Select Policlinic
+            </option>
+            @foreach(var cat in _policlinicService.Policlinics)
+            {
+                <option value="@cat.Id">@cat.PoliclinicName</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="()=>doctor.PoliclinicId" ></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label for="Name">Doctor Name</label>
+        <InputText id="text" @bind-Value="doctor.Name" class="form-control"></InputText>
+        <ValidationMessage For="()=>doctor.Name"></ValidationMessage>
+
+    </div>
+
+    <div class="mb-3">
+        <label for="title">Doctor Title</label>
+        <InputText id="text" @bind-Value="doctor.DoctorTitle" class="form-control"></InputText>
+        <ValidationMessage For="()=>doctor.DoctorTitle"></ValidationMessage>
+    </div
+
+      <div class="mb-3">
+        <label for="description">Description</label>
+        <InputText id="text" @bind-Value="doctor.Description" class="form-control"></InputText>
+        <ValidationMessage For="()=>doctor.Description"></ValidationMessage>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+
+
+</EditForm>
+
+
+@code {
+    private Doctor doctor = new Doctor();
+    private IEnumerable<Policlinic> _policlinics { get; set; } = new List<Policlinic>();
+    public async Task CreateDoctors()
+    {
+        await _doctorService.CreateDoctor(doctor);
+        _navigationManager.NavigateTo("");
+    }
+}

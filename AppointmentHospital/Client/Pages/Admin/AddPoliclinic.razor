@@ -1,0 +1,57 @@
+﻿@page "/addPoli"
+@inject IPoliclinicService _policlinicService
+@inject NavigationManager _navigationManager
+@implements IDisposable
+
+<EditForm Model="policlinic" OnValidSubmit="CreatePoliclinic">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="mb-3">
+        <label for="policlinicName">Policlinic Name</label>
+        <InputText id="text" @bind-Value=policlinic.PoliclinicName class="form-control"></InputText>
+        <ValidationMessage For="@(()=>policlinic.PoliclinicName)"  ></ValidationMessage>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</EditForm>
+<br />
+<br />
+<br />
+<br />
+<br />
+
+@foreach (var item in policlinics)
+{
+    <div class="container">
+        <div class="table-bordered">
+            <h4>@item.PoliclinicName</h4>
+        </div>
+    </div>
+    <button  class="btn btn-warning" @onclick="async ()=>{await _policlinicService.DeletePoliclinics(item.Id);await OnInitializedAsync();}">Sil</button>
+}
+
+
+@code {
+    private Policlinic policlinic = new Policlinic();
+    List<Policlinic> policlinics = new List<Policlinic>();
+    private async Task CreatePoliclinic()
+    {
+        await _policlinicService.CreatePoliclinics(policlinic);
+        _navigationManager.NavigateTo("");
+        await _policlinicService.GetPoliclinics();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        policlinics = await _policlinicService.GetPoliclinics();
+        _policlinicService.OnChange += StateHasChanged;
+    }
+    public void Dispose()
+    {
+        _policlinicService.OnChange -= StateHasChanged;
+    }
+
+    protected override bool ShouldRender()
+    {
+        return base.ShouldRender();
+    }
+
+}

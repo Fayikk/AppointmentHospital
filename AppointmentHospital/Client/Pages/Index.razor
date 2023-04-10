@@ -1,0 +1,24 @@
+﻿@page "/"
+@page "/{poliId:int}"
+
+@inject IPoliclinicService _policlinicService
+@inject IDoctorService _doctorService
+
+<PageTitle>Doktor Listesi</PageTitle>
+
+<DoctorList></DoctorList>
+
+
+
+@code{
+    [Parameter]
+    public int? poliId{ get; set; }
+    List<Doctor> Doctors = new List<Doctor>();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (poliId.HasValue)
+        {
+            await _doctorService.GetDoctor(poliId.Value);
+        }
+    }
+}

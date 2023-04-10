@@ -1,0 +1,61 @@
+﻿@page "/register"
+@using AppointmentHospital.Client.Services.ForAuth;
+@using AppointmentHospital.Shared.Model;
+@inject IAuthService _authService
+@inject NavigationManager _navigationManager
+
+<PageTitle>Register</PageTitle>
+<EditForm Model="user" OnValidSubmit="HandleRegistration">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="mb-3">
+        <label for="email">Email</label>
+        <InputText id="email" @bind-Value="user.Email"  class="form-control"></InputText>
+        <ValidationMessage For="@(()=>user.Email)"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label for="password">Password</label>
+        <InputText id="password" @bind-Value="user.Password" type="password" class="form-control"></InputText>
+        <ValidationMessage For="@(()=>user.Password)"></ValidationMessage>
+    </div>
+      <div class="mb-3">
+        <label for="confirmPassword">Confirm Password</label>
+        <InputText id="confirmPassword" @bind-Value="user.ConfirmPassword" type="password" class="form-control"></InputText>
+        <ValidationMessage For="@(()=>user.ConfirmPassword)"></ValidationMessage>
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+    <ValidationSummary></ValidationSummary>
+    <div class=@messageCssClass>
+        <span class="text-danger" >@message</span>
+    </div>
+</EditForm>
+
+
+
+@code {
+    UserRegister user = new UserRegister();
+
+    string message = string.Empty;
+    string messageCssClass = string.Empty;
+    private async Task HandleRegistration()
+    {
+        var result = await _authService.Register(user);
+        if (result.Success == false)
+        {
+            message = result.Message;
+        }
+        else
+        {
+        _navigationManager.NavigateTo("login");
+            
+        }
+        if (!result.Success)
+        {
+            messageCssClass = "text-success";
+        }
+        else
+        {
+            messageCssClass = "text-danger";
+        }
+    }
+
+}

@@ -1,0 +1,31 @@
+﻿@inject IDoctorService _doctorService
+@inject HttpClient _http
+@implements IDisposable
+
+@foreach(var item in _doctorService.Doctors)
+{
+    <div class="card">
+        <h5 class="card-header">@item.DoctorTitle</h5>
+        <div class="card-body">
+            <h5 class="card-title">@item.Name</h5>
+            <p class="card-text">@item.Description</p>
+            <a href="meetDate/@item.DoctorId" class="btn btn-primary">Randevu Al</a>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await _doctorService.GetDoctors();
+        _doctorService.doctorsChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        _doctorService.doctorsChanged -= StateHasChanged;
+    }
+}
