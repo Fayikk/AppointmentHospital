@@ -5,6 +5,7 @@
 @inject ILocalStorageService _localStorage
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject NavigationManager _navigationManager
+@inject IJSRuntime _js
 
 <PageTitle>Login</PageTitle>
 <EditForm Model="user" OnValidSubmit="HandleLogin">
@@ -23,26 +24,29 @@
     <button type="submit" class="btn btn-primary">Login</button>
 </EditForm>
 <div class="text-danger">
-    <span>@errorMessage</span>
+    <span>@message</span>
 </div>
 
 
 @code {
     UserLogin user = new UserLogin();
-    private string errorMessage = string.Empty;
+    private string message = string.Empty;
     private async Task HandleLogin()
     {
         var result = await _authService.Login(user);
-        if (!result.Success)
+        if (result.Success==true)
         {
-            errorMessage = string.Empty;
+            message = result.Message;
             await _localStorage.SetItemAsync("authToken", result.Data);
             await _authenticationStateProvider.GetAuthenticationStateAsync();
             _navigationManager.NavigateTo("");
+            await _js.InvokeVoidAsync("ShowToastr", "success", message);
+
         }
         else
         {
-            errorMessage = result.Message;
+            message = result.Message;
+            await _js.InvokeVoidAsync("ShowToastr", "error", message);
         }
     }
 

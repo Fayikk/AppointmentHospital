@@ -46,6 +46,7 @@ namespace AppointmentHospital.Server.Services.ForAuth
             }
             else
             {
+                response.Success = true;
                 response.Data = CreateToken(user);
                 response.Message = "User Login Successfully";
             }

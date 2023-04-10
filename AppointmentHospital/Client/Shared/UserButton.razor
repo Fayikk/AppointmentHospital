@@ -12,8 +12,7 @@
         <AuthorizeView >
             <Authorized>
                 <button @onclick="Logout" class="dropdown-item">Logout</button>
-                <a href="addDoctor" class="dropdown-item">Add Doctor</a>
-                <a href="addPoli" class="dropdown-item">Add Policlinic</a>
+               <ForAdmin></ForAdmin>
             </Authorized>
             <NotAuthorized>
                 <a href="register" class="dropdown-item">Register</a>
