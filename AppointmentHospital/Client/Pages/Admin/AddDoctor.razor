@@ -1,10 +1,14 @@
 ﻿@page "/addDoctor"
+@using System.Security.Claims;
 
 @inject IDoctorService _doctorService
 @inject IPoliclinicService _policlinicService
 @inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider _authStateProvider
 
-<EditForm Model="doctor" OnValidSubmit="CreateDoctors">
+@if (Roles == "Admin")
+{
+    <EditForm Model="doctor" OnValidSubmit="CreateDoctors">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div class="btn btn-group col-6">
         <InputSelect @bind-Value="doctor.PoliclinicId" class="form-select">
@@ -39,15 +43,36 @@
     <button type="submit" class="btn btn-primary">Save</button>
 
 
-</EditForm>
+    </EditForm>}
+else
+    {
+         <head>
+        <title>401 Not Authorized</title>
+      </head>
+      <body>
+        <h1>401 Not Authorized</h1>
+    <p>Sorry, you are not authorized to access this page.</p>
+  </body>
+    }
+
+
 
 
 @code {
     private Doctor doctor = new Doctor();
     private IEnumerable<Policlinic> _policlinics { get; set; } = new List<Policlinic>();
+    string Roles = "";
     public async Task CreateDoctors()
     {
         await _doctorService.CreateDoctor(doctor);
         _navigationManager.NavigateTo("");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string role = (await _authStateProvider.GetAuthenticationStateAsync()).User.Claims
+        .FirstOrDefault(x => x.Type == ClaimTypes.Role).Value;
+
+        Roles = role;
     }
 }
