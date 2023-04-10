@@ -51,10 +51,10 @@ namespace AppointmentHospital.Client.Services.ForMeet
             return responseData;
         }
 
-        public async Task<List<Meet>> GetMeet()
+        public async Task<ServiceResponse<List<Meet>>> GetMeet()
         {
             var result = await _httpClient.GetFromJsonAsync<ServiceResponse<List<Meet>>>("api/meet");
-            return result.Data;
+            return result;
         }
     }
 }

@@ -31,12 +31,14 @@ else
                 <div class="container">
                     @if (item.Status == false)
                     {
-                        <button class="btn btn-outline-warning" disabled @onclick="()=>_meetService.CancelMeet(item.Id)">Randevu İptal</button>
+                    <button class="btn btn-outline-warning" disabled @onclick="()=>Cancel(item.Id)">Randevu İptal</button>
                     }
                     else
                     {
-                    <button class="btn btn-outline-warning" @onclick="async ()=> {await _meetService.CancelMeet(item.Id);await OnInitializedAsync();}">Randevu iptal</button>
-                    }
+                    @*<button class="btn btn-outline-warning" @onclick="async ()=> {await _meetService.CancelMeet(item.Id);await OnInitializedAsync();}">Randevu iptal</button>*@
+                    <button class="btn btn-outline-warning" @onclick="()=>Cancel(item.Id)">Randevu iptal</button>
+
+                }
                 </div>
         </div>
         <br />
@@ -47,27 +49,28 @@ else
 }
 
 @code {
-    List<Meet> meets = null;
+    List<Meet> meets = new List<Meet>();
     [Parameter]
     public int Id { get; set; }
     public string errorMessage = "";
     protected override async Task OnInitializedAsync()
     {
-       meets = await _meetService.GetMeet();
+        var result = await _meetService.GetMeet();
+        meets = result.Data;
     }
 
-    //protected async Task Cancel()
-    //{
-    //    var result = await _meetService.CancelMeet(Id);
-    //    if (!result.Success)
-    //    {
-    //        errorMessage = result.Message;
-    //    }
-    //    else
-    //    {
-    //        //_navigationManager.NavigateTo("");
+    protected async Task Cancel(int id)
+    {
+        var result = await _meetService.CancelMeet(id);
+        if (!result.Success)
+        {
+            errorMessage = result.Message;
+        }
+        else
+        {
+            //_navigationManager.NavigateTo("");
 
-    //        await OnInitializedAsync();
-    //    }
-    //}
+            await OnInitializedAsync();
+        }
+    }
 }
