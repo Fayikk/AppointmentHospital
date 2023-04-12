@@ -1,9 +1,12 @@
 using AppointmentHospital.Server.Context;
+using AppointmentHospital.Server.Helper;
 using AppointmentHospital.Server.Services.ForAuth;
 using AppointmentHospital.Server.Services.ForDoctor;
 using AppointmentHospital.Server.Services.ForMeet;
 using AppointmentHospital.Server.Services.ForPoliclinic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity.UI.Services;
+//using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +22,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPoliclinicService, PoliclinicService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IMeetService, MeetService>();
-
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

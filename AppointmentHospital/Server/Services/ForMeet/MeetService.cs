@@ -1,6 +1,7 @@
 ﻿using AppointmentHospital.Server.Context;
 using AppointmentHospital.Server.Services.ForAuth;
 using AppointmentHospital.Shared;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppointmentHospital.Server.Services.ForMeet
@@ -9,10 +10,14 @@ namespace AppointmentHospital.Server.Services.ForMeet
     {
         private readonly DataContext _dataContext;
         private readonly IAuthService _authService;
-        public MeetService(DataContext context,IAuthService authService)
+        private readonly IEmailSender _emailSender;
+        public MeetService(DataContext context
+                          ,IAuthService authService
+                          ,IEmailSender emailSender)
         {
             _dataContext = context;
             _authService = authService;
+            _emailSender = emailSender;
         }
 
         public async Task<ServiceResponse<Meet>> CancelMeet(int id)
@@ -52,6 +57,7 @@ namespace AppointmentHospital.Server.Services.ForMeet
             var poly = await _dataContext.Policlinics.FirstOrDefaultAsync(x => x.Id == doctor.PoliclinicId);
             var mDate = await _dataContext.Meets.Where(x=>x.MeetDate.Month==meet.MeetDate.Month).ToListAsync();
             var user = _authService.GetUserId();
+            var User = await _dataContext.Users.FirstOrDefaultAsync(x => x.Id == user);
             var checkUser = await _dataContext.Meets.Where(x => x.UserId == user).ToListAsync();
 
             if (meet.MeetTime.Hours==00)
@@ -92,6 +98,7 @@ namespace AppointmentHospital.Server.Services.ForMeet
                 meet.DoctorName = doctor.Name;
                 var addedObj = _dataContext.Meets.Add(meet);
                 await _dataContext.SaveChangesAsync();
+                await _emailSender.SendEmailAsync(User.Email, "Randevunuz alınmıştır.Randevu saatinde orada olmanız önemlidir.", meet.MeetTime.ToString() + "saatine randevunuz ayarlanmıştır");
                 return new ServiceResponse<Meet>
                 {
                     Success = true,
