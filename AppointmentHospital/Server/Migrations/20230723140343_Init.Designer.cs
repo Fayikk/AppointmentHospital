@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointmentHospital.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230402111739_Init")]
+    [Migration("20230723140343_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
